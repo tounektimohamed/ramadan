@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>حملة الخير 2</title>
+<title>حملة الخير 2 - نجوم متلألئة</title>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -48,33 +48,65 @@ body{
   color:white;
   overflow:hidden;
   background:linear-gradient(to bottom,#0b1d2a,#08121f 70%);
+  position: relative;
+  min-height: 100vh;
 }
 
-/* نجوم */
-body::before{
-  content:"";
-  position:absolute;
-  width:100%;
-  height:100%;
-  background:
-    radial-gradient(2px 2px at 20% 30%, white, transparent),
-    radial-gradient(2px 2px at 70% 40%, white, transparent),
-    radial-gradient(2px 2px at 50% 80%, white, transparent),
-    radial-gradient(2px 2px at 90% 60%, white, transparent),
-    radial-gradient(2px 2px at 10% 70%, white, transparent);
-  animation:twinkle 3s infinite alternate;
-  opacity:0.4;
-}
-@keyframes twinkle{
-  from{opacity:0.3;}
-  to{opacity:0.6;}
+/* ========== النجوم المتلألئة المحسّنة ========== */
+.stars-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none; /* تسمح بالتفاعل مع المحتوى خلفها */
+  z-index: 0;
+  overflow: hidden;
 }
 
+.star {
+  position: absolute;
+  background-color: #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 10px 2px rgba(255, 255, 255, 0.8);
+  animation: twinkle var(--duration) infinite alternate ease-in-out;
+  opacity: 0;
+  width: var(--size);
+  height: var(--size);
+  top: var(--y);
+  left: var(--x);
+}
+
+/* نجوم أكبر مع هالات ذهبية خفيفة */
+.star.special {
+  background-color: #ffe484;
+  box-shadow: 0 0 12px 4px #ffd700;
+  animation-duration: 2.5s;
+}
+
+@keyframes twinkle {
+  0% {
+    opacity: 0.1;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+    background-color: #fffde7;
+  }
+  100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+}
+
+/* تحسين ظهور النجوم في النهار/الخلفية */
 .logo{
   position:absolute;
   left:8%;
   top:20px;
   width:110px;
+  z-index: 2;
 }
 
 .lantern{
@@ -84,6 +116,7 @@ body::before{
   width:110px;
   animation:swing 3s ease-in-out infinite;
   transform-origin:top center;
+  z-index: 2;
 }
 @keyframes swing{
   0%{transform:rotate(5deg);}
@@ -93,17 +126,30 @@ body::before{
 
 .container{
   margin-top:120px;
+  position: relative;
+  z-index: 2;
+  background-color: rgba(0, 0, 0, 0.3); /* خلفية شبه شفافة لتحسين قراءة النص */
+  padding: 20px;
+  border-radius: 30px;
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+  backdrop-filter: blur(2px);
+  border: 1px solid rgba(255,215,0,0.2);
+  box-shadow: 0 0 30px rgba(0,0,0,0.5);
 }
 
 h1{
   font-size:40px;
   color:#FFD700;
+  text-shadow: 0 0 15px gold;
 }
 
 .money{
   font-size:50px;
   margin:20px 0;
   color:#00ff99;
+  text-shadow: 0 0 10px #00ff99;
 }
 
 .baskets{
@@ -118,6 +164,7 @@ h1{
   border-radius:40px;
   height:25px;
   overflow:hidden;
+  border: 1px solid #FFD70055;
 }
 
 .progress-fill{
@@ -125,19 +172,23 @@ h1{
   width:0%;
   background:linear-gradient(90deg,gold,#00ff99);
   transition:width 1s ease;
+  box-shadow: 0 0 20px #00ff99;
 }
 
 .footer{
   margin-top:25px;
   font-size:18px;
+  color: #ffe4b5;
 }
 </style>
 </head>
-
 <body>
 
-<img src="logo.png" class="logo">
-<img src="lantern.png" class="lantern">
+<!-- حاوية النجوم المتلألئة التي سيتم إنشاؤها بواسطة جافاسكريبت -->
+<div class="stars-container" id="stars-container"></div>
+
+<img src="logo.png" class="logo" alt="logo" onerror="this.style.display='none'">
+<img src="lantern.png" class="lantern" alt="lantern" onerror="this.style.display='none'">
 
 <div class="container">
   <h1>🌙 حملة الخير 2 🌙</h1>
@@ -160,5 +211,60 @@ h1{
   </div>
 </div>
 
+<script>
+(function() {
+  // دالة لإنشاء نجوم عشوائية متلألئة
+  function createStars() {
+    const container = document.getElementById('stars-container');
+    if (!container) return;
+    
+    // تنظيف أي نجوم سابقة (اختياري، لكننا نريد إنشاء مرة واحدة)
+    // container.innerHTML = ''; // يمكن إلغاء التعليق إذا أردت إعادة تعيين
+    
+    const numberOfStars = 200; // عدد النجوم
+    
+    for (let i = 0; i < numberOfStars; i++) {
+      const star = document.createElement('div');
+      star.classList.add('star');
+      
+      // موقع عشوائي
+      const x = Math.random() * 100; // %
+      const y = Math.random() * 100; // %
+      
+      // حجم عشوائي بين 1px و 5px
+      const size = Math.random() * 4 + 1; // 1px - 5px
+      
+      // مدة الوميض العشوائي بين 1.5s و 4s
+      const duration = Math.random() * 3 + 1.5; // 1.5s - 4.5s
+      
+      // تأخير عشوائي لتبدأ الأوميض في أوقات مختلفة
+      const delay = Math.random() * 5; // 0s - 5s
+      
+      // بعض النجوم تكون خاصة (أكبر ولمعان ذهبي) باحتمال 15%
+      if (Math.random() < 0.15) {
+        star.classList.add('special');
+      }
+      
+      // تعيين الخصائص المخصصة
+      star.style.setProperty('--x', x + '%');
+      star.style.setProperty('--y', y + '%');
+      star.style.setProperty('--size', size + 'px');
+      star.style.setProperty('--duration', duration + 's');
+      star.style.left = x + '%';
+      star.style.top = y + '%';
+      star.style.width = size + 'px';
+      star.style.height = size + 'px';
+      star.style.animationDelay = delay + 's';
+      
+      container.appendChild(star);
+    }
+  }
+  
+  // تشغيل الدالة بعد تحميل الصفحة
+  window.addEventListener('load', createStars);
+})();
+</script>
+
+<!-- ملاحظة: الصور logo.png و lantern.png غير موجودة لكن تم إخفاؤها في حالة الخطأ -->
 </body>
 </html>
