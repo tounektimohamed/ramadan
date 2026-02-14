@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>حملة الخير 2 - نجوم متلألئة</title>
+<title>حملة الخير 2 - العد التنازلي</title>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -46,22 +46,34 @@ body{
   direction:rtl;
   text-align:center;
   color:white;
-  overflow:hidden;
-  background:linear-gradient(to bottom,#0b1d2a,#08121f 70%);
-  position: relative;
+  overflow-x: hidden;
   min-height: 100vh;
+  position: relative;
+  transition: background 1.5s ease;
 }
 
-/* ========== النجوم المتلألئة المحسّنة ========== */
+/* الخلفيات حسب الوقت - سيتم التحكم بها عبر JS */
+body.morning {
+  background: linear-gradient(145deg, #87CEEB 0%, #F0E68C 50%, #FFB347 100%);
+}
+body.evening {
+  background: linear-gradient(145deg, #2c3e50 0%, #1a1f2e 70%, #0f0f1f 100%);
+}
+body.night {
+  background: linear-gradient(to bottom, #0b1d2a, #030712 90%);
+}
+
+/* حاوية النجوم - تظهر فقط في المساء والليل */
 .stars-container {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  pointer-events: none; /* تسمح بالتفاعل مع المحتوى خلفها */
+  pointer-events: none;
   z-index: 0;
   overflow: hidden;
+  transition: opacity 1.2s ease;
 }
 
 .star {
@@ -77,7 +89,6 @@ body{
   left: var(--x);
 }
 
-/* نجوم أكبر مع هالات ذهبية خفيفة */
 .star.special {
   background-color: #ffe484;
   box-shadow: 0 0 12px 4px #ffd700;
@@ -85,22 +96,40 @@ body{
 }
 
 @keyframes twinkle {
-  0% {
-    opacity: 0.1;
-    transform: scale(0.8);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.2);
-    background-color: #fffde7;
-  }
-  100% {
-    opacity: 0.4;
-    transform: scale(1);
-  }
+  0% { opacity: 0.1; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.2); background-color: #fffde7; }
+  100% { opacity: 0.4; transform: scale(1); }
 }
 
-/* تحسين ظهور النجوم في النهار/الخلفية */
+/* الشمس / القمر حسب الوقت */
+.orb {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  z-index: 3;
+  box-shadow: 0 0 40px currentColor;
+  transition: all 1s ease;
+}
+.orb.morning {
+  background: radial-gradient(circle at 30% 30%, #fffac2, #FFD700);
+  color: #ffb300;
+  box-shadow: 0 0 60px #ffaa00;
+}
+.orb.evening {
+  background: radial-gradient(circle at 30% 30%, #fff0d0, #F39C12);
+  color: #e67e22;
+  box-shadow: 0 0 50px #f39c12;
+}
+.orb.night {
+  background: radial-gradient(circle at 30% 30%, #f5f0e6, #b0b0b0);
+  color: #dddddd;
+  box-shadow: 0 0 40px #aaa;
+}
+
+/* عناصر ثابتة */
 .logo{
   position:absolute;
   left:8%;
@@ -128,15 +157,16 @@ body{
   margin-top:120px;
   position: relative;
   z-index: 2;
-  background-color: rgba(0, 0, 0, 0.3); /* خلفية شبه شفافة لتحسين قراءة النص */
+  background-color: rgba(0, 0, 0, 0.25);
   padding: 20px;
   border-radius: 30px;
   width: 80%;
   margin-left: auto;
   margin-right: auto;
-  backdrop-filter: blur(2px);
-  border: 1px solid rgba(255,215,0,0.2);
-  box-shadow: 0 0 30px rgba(0,0,0,0.5);
+  backdrop-filter: blur(3px);
+  border: 1px solid rgba(255,215,0,0.25);
+  box-shadow: 0 0 40px rgba(0,0,0,0.5);
+  transition: background-color 0.5s;
 }
 
 h1{
@@ -175,6 +205,26 @@ h1{
   box-shadow: 0 0 20px #00ff99;
 }
 
+.countdown-box {
+  background: rgba(0, 0, 0, 0.5);
+  padding: 15px;
+  border-radius: 50px;
+  display: inline-block;
+  margin: 15px auto 5px;
+  border: 1px solid gold;
+  backdrop-filter: blur(4px);
+  font-size: 22px;
+  font-weight: bold;
+  color: #FFD966;
+  direction: ltr;
+}
+
+.countdown-label {
+  font-size: 18px;
+  color: #ffffffcc;
+  margin-bottom: 8px;
+}
+
 .footer{
   margin-top:25px;
   font-size:18px;
@@ -182,9 +232,9 @@ h1{
 }
 </style>
 </head>
-<body>
+<body class="night" id="bodyTheme">
 
-<!-- حاوية النجوم المتلألئة التي سيتم إنشاؤها بواسطة جافاسكريبت -->
+<div class="orb" id="orb"></div>
 <div class="stars-container" id="stars-container"></div>
 
 <img src="logo.png" class="logo" alt="logo" onerror="this.style.display='none'">
@@ -193,6 +243,10 @@ h1{
 <div class="container">
   <h1>🌙 حملة الخير 2 🌙</h1>
   <div>معًا نصنع الفرق</div>
+
+  <!-- العد التنازلي لموعد الانطلاق: غداً 9 صباحاً -->
+  <div class="countdown-label">⏳ موعد انطلاق الحملة</div>
+  <div class="countdown-box" id="countdown">جاري الحساب...</div>
 
   <div class="money">
     💰 <span id="money">0</span> دينار
@@ -213,39 +267,69 @@ h1{
 
 <script>
 (function() {
-  // دالة لإنشاء نجوم عشوائية متلألئة
+  // ========== إدارة الوقت وتحديد الفترة (صباح/مساء) ==========
+  function getTimePeriod() {
+    const now = new Date();
+    const hours = now.getHours();
+    // صباح: 6 صباحاً - 5 مساءً (18) ، مساء: 6 مساءً - 9 مساءً ، ليل: 10 مساءً - 5 صباحاً
+    if (hours >= 6 && hours < 18) {
+      return 'morning';
+    } else if (hours >= 18 && hours < 22) {
+      return 'evening';
+    } else {
+      return 'night';
+    }
+  }
+
+  function applyTheme(period) {
+    const body = document.getElementById('bodyTheme');
+    const orb = document.getElementById('orb');
+    const starsContainer = document.getElementById('stars-container');
+    
+    // إزالة الكلاسات القديمة
+    body.className = '';
+    orb.className = 'orb';
+    
+    // إضافة الكلاس الجديد
+    body.classList.add(period);
+    orb.classList.add(period);
+    
+    // التحكم في ظهور النجوم: تظهر فقط في evening و night
+    if (period === 'evening' || period === 'night') {
+      starsContainer.style.opacity = '1';
+      starsContainer.style.pointerEvents = 'none';
+      // إذا لم تكن النجوم مخلوقة بعد، أنشئها
+      if (!window.starsCreated) {
+        createStars();
+        window.starsCreated = true;
+      }
+    } else {
+      starsContainer.style.opacity = '0'; // إخفاء النجوم نهاراً
+    }
+  }
+
+  // ========== إنشاء النجوم (مرة واحدة) ==========
   function createStars() {
     const container = document.getElementById('stars-container');
     if (!container) return;
     
-    // تنظيف أي نجوم سابقة (اختياري، لكننا نريد إنشاء مرة واحدة)
-    // container.innerHTML = ''; // يمكن إلغاء التعليق إذا أردت إعادة تعيين
-    
-    const numberOfStars = 200; // عدد النجوم
+    // نجوم أكثر كثافة في الليل
+    const numberOfStars = 250; 
     
     for (let i = 0; i < numberOfStars; i++) {
       const star = document.createElement('div');
       star.classList.add('star');
       
-      // موقع عشوائي
-      const x = Math.random() * 100; // %
-      const y = Math.random() * 100; // %
+      const x = Math.random() * 100; 
+      const y = Math.random() * 100; 
+      const size = Math.random() * 4 + 1; 
+      const duration = Math.random() * 3 + 1.5;
+      const delay = Math.random() * 5; 
       
-      // حجم عشوائي بين 1px و 5px
-      const size = Math.random() * 4 + 1; // 1px - 5px
-      
-      // مدة الوميض العشوائي بين 1.5s و 4s
-      const duration = Math.random() * 3 + 1.5; // 1.5s - 4.5s
-      
-      // تأخير عشوائي لتبدأ الأوميض في أوقات مختلفة
-      const delay = Math.random() * 5; // 0s - 5s
-      
-      // بعض النجوم تكون خاصة (أكبر ولمعان ذهبي) باحتمال 15%
       if (Math.random() < 0.15) {
         star.classList.add('special');
       }
       
-      // تعيين الخصائص المخصصة
       star.style.setProperty('--x', x + '%');
       star.style.setProperty('--y', y + '%');
       star.style.setProperty('--size', size + 'px');
@@ -259,12 +343,72 @@ h1{
       container.appendChild(star);
     }
   }
-  
-  // تشغيل الدالة بعد تحميل الصفحة
-  window.addEventListener('load', createStars);
+
+  // ========== العد التنازلي لموعد الغد 9:00 صباحاً ==========
+  function updateCountdown() {
+    const now = new Date();
+    
+    // تحديد موعد الغد الساعة 9:00 صباحاً
+    const tomorrow = new Date(now);
+    tomorrow.setDate(now.getDate() + 1);
+    tomorrow.setHours(9, 0, 0, 0); // 9:00:00
+    
+    // الفرق بالمللي ثانية
+    let diff = tomorrow - now;
+    
+    // إذا كان الوقت قد تجاوز 9 صباحاً في يوم الغد (أو اليوم نفسه بعد 9) ولكن العد التنازلي ينتهي
+    // نعدل الحالة: إذا أصبح الفرق سالباً نعرض "انطلقت الحملة!"
+    if (diff < 0) {
+      document.getElementById('countdown').innerHTML = '🚀 الحملة منطلقة!';
+      return;
+    }
+    
+    // حساب الأيام والساعات والدقائق والثواني
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (86400000)) / (3600000));
+    const minutes = Math.floor((diff % 3600000) / 60000);
+    const seconds = Math.floor((diff % 60000) / 1000);
+    
+    // تنسيق العرض: d:h:m:s
+    let countdownStr = '';
+    if (days > 0) countdownStr += `${days}يوم `;
+    countdownStr += `${hours.toString().padStart(2,'0')}:${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
+    
+    document.getElementById('countdown').innerHTML = countdownStr;
+  }
+
+  // ========== تهيئة الصفحة ==========
+  function init() {
+    // تحديد الفترة وتطبيق الثيم
+    const period = getTimePeriod();
+    applyTheme(period);
+    
+    // إنشاء النجوم إذا كانت الفترة تسمح (سيتم التحقق داخل applyTheme)
+    // لكن النجوم تُنشأ فقط إذا كانت opacity = 1 وليست موجودة مسبقاً.
+    // نضبط window.starsCreated لتفادي إعادة الإنشاء.
+    if (period === 'evening' || period === 'night') {
+      if (!window.starsCreated) {
+        createStars();
+        window.starsCreated = true;
+      }
+    }
+    
+    // تحديث العد التنازلي كل ثانية
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+    
+    // تغيير الثيم كل دقيقة (للتكيف مع تغير الوقت)
+    setInterval(() => {
+      const newPeriod = getTimePeriod();
+      applyTheme(newPeriod);
+    }, 60000); // كل دقيقة
+  }
+
+  // بدء التشغيل بعد تحميل الصفحة
+  window.addEventListener('load', init);
 })();
 </script>
 
-<!-- ملاحظة: الصور logo.png و lantern.png غير موجودة لكن تم إخفاؤها في حالة الخطأ -->
+<!-- دعم الصور البديلة إذا لم توجد -->
 </body>
 </html>
