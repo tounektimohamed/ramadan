@@ -12,22 +12,23 @@ import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10
 const firebaseConfig = {
   apiKey: "AIzaSyAVacEYZNH0jIimwurEE0g4mTRUz1RvkT0",
   authDomain: "waste-sorting-ai-36421.firebaseapp.com",
+  databaseURL: "https://waste-sorting-ai-36421-default-rtdb.firebaseio.com",
   projectId: "waste-sorting-ai-36421",
-  storageBucket: "waste-sorting-ai-36421.firebasestorage.app",
+  storageBucket: "waste-sorting-ai-36421.appspot.com",
   messagingSenderId: "914592255386",
-  appId: "1:914592255386:web:5d25982cf97bc85ca8fe23",
-  measurementId: "G-134L1T4JEM"
+  appId: "1:914592255386:web:5d25982cf97bc85ca8fe23"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const totalRef = ref(db, "total");
 
-const basketPrice = 100; // سعر القفة
+const basketPrice = 100;
 const goal = 100;
 
 onValue(totalRef, (snapshot) => {
   let total = snapshot.val() || 0;
+
   document.getElementById("money").innerText = total.toLocaleString();
 
   let baskets = Math.floor(total / basketPrice);
@@ -38,7 +39,7 @@ onValue(totalRef, (snapshot) => {
 });
 </script>
 
-  <style>
+<style>
 body{
   margin:0;
   font-family:Tahoma;
@@ -46,10 +47,10 @@ body{
   text-align:center;
   color:white;
   overflow:hidden;
-  background: linear-gradient(to bottom, #0b1d2a, #08121f 70%);
+  background:linear-gradient(to bottom,#0b1d2a,#08121f 70%);
 }
 
-/* نجوم مصنوعة بالـ CSS */
+/* نجوم */
 body::before{
   content:"";
   position:absolute;
@@ -61,16 +62,14 @@ body::before{
     radial-gradient(2px 2px at 50% 80%, white, transparent),
     radial-gradient(2px 2px at 90% 60%, white, transparent),
     radial-gradient(2px 2px at 10% 70%, white, transparent);
-  animation: twinkle 3s infinite alternate;
+  animation:twinkle 3s infinite alternate;
   opacity:0.4;
 }
-
 @keyframes twinkle{
   from{opacity:0.3;}
   to{opacity:0.6;}
 }
 
-/* اللوقو */
 .logo{
   position:absolute;
   left:8%;
@@ -78,7 +77,6 @@ body::before{
   width:110px;
 }
 
-/* الفانوس */
 .lantern{
   position:absolute;
   right:8%;
@@ -87,7 +85,6 @@ body::before{
   animation:swing 3s ease-in-out infinite;
   transform-origin:top center;
 }
-
 @keyframes swing{
   0%{transform:rotate(5deg);}
   50%{transform:rotate(-5deg);}
@@ -104,7 +101,7 @@ h1{
 }
 
 .money{
-  font-size:48px;
+  font-size:50px;
   margin:20px 0;
   color:#00ff99;
 }
@@ -134,13 +131,14 @@ h1{
   margin-top:25px;
   font-size:18px;
 }
-  </style>
+</style>
 </head>
 
 <body>
 
 <img src="logo.png" class="logo">
 <img src="lantern.png" class="lantern">
+
 <div class="container">
   <h1>🌙 حملة الخير 2 🌙</h1>
   <div>معًا نصنع الفرق</div>
