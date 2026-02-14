@@ -38,7 +38,38 @@ onValue(totalRef, (snapshot) => {
   document.getElementById("progress").style.width = percent + "%";
 });
 </script>
+<style>
+/* Hugging Face Spaces - إخفاء الواجهة العلوية */
+.hf-header,
+.hf-header-container,
+.hf-space-header,
+.hf-header *,
+iframe[name="header"],
+div:has(> iframe[name="header"]) {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    height: 0 !important;
+    width: 0 !important;
+    position: absolute !important;
+    top: -9999px !important;
+    left: -9999px !important;
+    pointer-events: none !important;
+}
 
+/* إزالة أي مسافات */
+body {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* التأكد أن المحتوى يظهر بشكل كامل */
+html, body {
+    height: 100%;
+    width: 100%;
+    overflow-x: hidden;
+}
+</style>
 <style>
 body{
   margin:0;
