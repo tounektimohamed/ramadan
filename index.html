@@ -38,71 +38,79 @@ onValue(totalRef, (snapshot) => {
 });
 </script>
 
-<style>
+  <style>
 body{
   margin:0;
   font-family:Tahoma;
   direction:rtl;
   text-align:center;
   color:white;
-  background: radial-gradient(circle at top,#102030,#08121f 70%);
   overflow:hidden;
+  background: linear-gradient(to bottom, #0b1d2a, #08121f 70%);
 }
 
-/* نجوم */
+/* نجوم مصنوعة بالـ CSS */
 body::before{
   content:"";
   position:absolute;
   width:100%;
   height:100%;
-  background:url("https://i.imgur.com/9a8Q6pF.png");
-  opacity:0.25;
-  animation:stars 80s linear infinite;
-}
-@keyframes stars{
-  from{background-position:0 0;}
-  to{background-position:2000px 2000px;}
+  background:
+    radial-gradient(2px 2px at 20% 30%, white, transparent),
+    radial-gradient(2px 2px at 70% 40%, white, transparent),
+    radial-gradient(2px 2px at 50% 80%, white, transparent),
+    radial-gradient(2px 2px at 90% 60%, white, transparent),
+    radial-gradient(2px 2px at 10% 70%, white, transparent);
+  animation: twinkle 3s infinite alternate;
+  opacity:0.4;
 }
 
+@keyframes twinkle{
+  from{opacity:0.3;}
+  to{opacity:0.6;}
+}
+
+/* اللوقو */
 .logo{
   position:absolute;
   left:8%;
   top:20px;
-  width:120px;
+  width:110px;
 }
 
+/* الفانوس */
 .lantern{
   position:absolute;
   right:8%;
   top:10px;
-  width:120px;
+  width:110px;
   animation:swing 3s ease-in-out infinite;
   transform-origin:top center;
 }
+
 @keyframes swing{
-  0%{transform:rotate(6deg);}
-  50%{transform:rotate(-6deg);}
-  100%{transform:rotate(6deg);}
+  0%{transform:rotate(5deg);}
+  50%{transform:rotate(-5deg);}
+  100%{transform:rotate(5deg);}
 }
 
 .container{
-  margin-top:100px;
-  position:relative;
+  margin-top:120px;
 }
 
 h1{
-  font-size:42px;
+  font-size:40px;
   color:#FFD700;
 }
 
 .money{
-  font-size:50px;
+  font-size:48px;
   margin:20px 0;
   color:#00ff99;
 }
 
 .baskets{
-  font-size:26px;
+  font-size:24px;
   margin-bottom:20px;
 }
 
@@ -111,7 +119,7 @@ h1{
   margin:20px auto;
   background:#ffffff22;
   border-radius:40px;
-  height:30px;
+  height:25px;
   overflow:hidden;
 }
 
@@ -123,10 +131,10 @@ h1{
 }
 
 .footer{
-  margin-top:30px;
-  font-size:20px;
+  margin-top:25px;
+  font-size:18px;
 }
-</style>
+  </style>
 </head>
 
 <body>
