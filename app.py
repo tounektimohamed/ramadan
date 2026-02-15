@@ -731,13 +731,10 @@ button:hover {
 </body>
 </html>
 '''
-
 if __name__ == '__main__':
-    # Créer le dossier static s'il n'existe pas
-    if not os.path.exists('static'):
-        os.makedirs('static')
-        print("📁 Dossier 'static' créé - Placez vos images ici")
-    
+    # Remplacer la fin de votre fichier par ceci :
+    port = int(os.environ.get('PORT', 5000))  # Utilise le port Render ou 5000 en local
+    app.run(host='0.0.0.0', port=port)
     print("\n" + "="*60)
     print("🚀 APPLICATION DÉMARRÉE AVEC SUCCÈS")
     print("="*60)
